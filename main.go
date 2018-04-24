@@ -46,7 +46,9 @@ func main() {
 
 	if opts.OutputFile == "" {
 		panic("输出文件未设置，使用/tmp/puml.txt做为输出文件")
-		opts.OutputFile = "/tmp/puml.txt"
+		opts.OutputFile = "puml.txt"
+	}else{
+		opts.OutputFile,_ = filepath.Abs(opts.OutputFile)
 	}
 
 	currentPath := getCurrentDirectory(opts.OutputFile)
