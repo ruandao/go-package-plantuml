@@ -40,19 +40,18 @@ func main() {
 	}
 
 	if opts.GopathDir == "" {
-	    opts.GopathDir=os.Getenv("GOPATH")
-	    if opts.GopathDir == "" {
-		    panic("GOPATH目录不能为空")
-		    os.Exit(1)
-        }
+		opts.GopathDir = os.Getenv("GOPATH")
+		if opts.GopathDir == "" {
+			panic("GOPATH目录不能为空")
+			os.Exit(1)
+		}
 	}
 
 	if opts.OutputFile == "" {
-		panic("输出文件未设置，使用/tmp/puml.txt做为输出文件")
+		fmt.Println("输出文件未设置使用puml.txt做为输出文件")
 		opts.OutputFile = "puml.txt"
-	}else{
-		opts.OutputFile,_ = filepath.Abs(opts.OutputFile)
 	}
+	opts.OutputFile, _ = filepath.Abs(opts.OutputFile)
 
 	currentPath := getCurrentDirectory(opts.OutputFile)
 	createErr := os.MkdirAll(currentPath, 0777)
