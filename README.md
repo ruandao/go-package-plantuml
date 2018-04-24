@@ -29,15 +29,13 @@ yum install wget
 go get github.com/maobuji/go-package-plantuml
 ````
 
-### 使用脚本运行
-因为参数每次都要输入比较麻烦，所以提供了一个runtool辅助,首次运行会自动下载依赖包，请耐心等待。
-config文件中是一些常用配置，需要首先配置
+### 编译和下载依赖包
+首次运行会自动下载依赖包，请耐心等待。
 ````
 cd /opt
 cp $GOPATH/src/github.com/maobuji/go-package-plantuml/goplantuml . -rf
 cd goplantuml
-vi config.properties
-sh gouml.sh
+sh install.sh
 ````
 
 
@@ -60,3 +58,5 @@ sh gouml.sh
 ````
 java -jar plantuml.jar /tmp/result.txt -tsvg
 ````
+
+gouml脚本中有样例，可以直接sh gouml.sh运行

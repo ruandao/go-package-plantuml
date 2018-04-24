@@ -1,8 +1,9 @@
 #!/bin/bash
 
-./go-package-plantuml --codedir /opt/gopath/src/github.com/pingcap/tidb/session --outputfile session.txt
-echo "java -jar plantuml session.txt -tsvg"
-java -jar plantuml session.txt -tsvg
+out_file=session.txt
+./go-package-plantuml --codedir /opt/gopath/src/github.com/pingcap/tidb/session --outputfile $out_file
+echo "java -jar plantuml.jar $out_file -tsvg"
+java -jar plantuml.jar $out_file -tsvg
 
 
 
