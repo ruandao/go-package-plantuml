@@ -35,6 +35,7 @@ go get github.com/maobuji/go-package-plantuml
 cd /opt
 cp $GOPATH/src/github.com/maobuji/go-package-plantuml/goplantuml . -rf
 cd goplantuml
+chmod 775 *.sh
 sh install.sh
 ````
 
