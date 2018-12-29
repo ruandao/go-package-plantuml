@@ -15,9 +15,38 @@ import (
 	"encoding/json"
 )
 
+type GoPathVar []string
+
+func (p GoPathVar) IsGoPathForModule(modulePath string) bool {
+	for _, path := range p {
+		if strings.HasPrefix(modulePath, path) {
+			return true
+		}
+	}
+	return false
+}
+func (p GoPathVar) IsEmpty() bool {
+	return len(p) == 0
+}
+func (p GoPathVar) PathesExist() bool {
+	for _, path := range p {
+		if !PathExists(path) {
+			return false
+		}
+	}
+	return true
+}
+func (p GoPathVar) Map(mf func(path string)string) GoPathVar {
+	p2 := make([]string, 0, len(p))
+	for _, path := range p {
+		p2 = append(p2, mf(path))
+	}
+	return p2
+}
+
 type Config struct {
 	CodeDir    string
-	GopathDir  string
+	GopathDir  GoPathVar
 	VendorDir  string
 	IgnoreDirs []string
 }
@@ -215,7 +244,7 @@ func (this *analysisTool)analysis(config Config) {
 		return
 	}
 
-	if this.config.GopathDir == "" || ! PathExists(this.config.GopathDir) {
+	if this.config.GopathDir.IsEmpty() || !this.config.GopathDir.PathesExist() {
 		log.Errorf("找不到GOPATH目录%s\n", this.config.GopathDir)
 		return
 	}
@@ -357,12 +386,16 @@ func (this*analysisTool) filepathToPackagePath(filepath string) string {
 		}
 	}
 
-	if this.config.GopathDir != "" {
-		srcdir := path.Join(this.config.GopathDir, "src")
-		if strings.HasPrefix(filepath, srcdir) {
-			packagePath := strings.TrimPrefix(filepath, srcdir)
-			packagePath = strings.TrimPrefix(packagePath, "/")
-			return packagePath
+	if !this.config.GopathDir.IsEmpty() {
+		paths := this.config.GopathDir.Map(func(p string) string {
+			return path.Join(p, "src")
+		})
+		for _, srcdir := range paths {
+			if strings.HasPrefix(filepath, srcdir) {
+				packagePath := strings.TrimPrefix(filepath, srcdir)
+				packagePath = strings.TrimPrefix(packagePath, "/")
+				return packagePath
+			}
 		}
 	}
 
@@ -1017,10 +1050,15 @@ func (this *analysisTool) findAliasByPackagePath(packagePath string) string {
 		}
 	}
 
-	if this.config.GopathDir != "" {
-		absPath := path.Join(this.config.GopathDir, "src", packagePath)
-		if PathExists(absPath) {
-			result = findGoPackageNameInDirPath(absPath)
+	if !this.config.GopathDir.IsEmpty() {
+		absPaths := this.config.GopathDir.Map(func(p string) string {
+			absPath := path.Join(p, "src", packagePath)
+			return absPath
+		})
+		for _, absPath := range absPaths {
+			if PathExists(absPath) {
+				result = findGoPackageNameInDirPath(absPath)
+			}
 		}
 	}
 
